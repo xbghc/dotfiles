@@ -5,3 +5,9 @@
     gitName = {{ $gitName | quote }}
     gitEmail = {{ $gitEmail | quote }}
     gitDefaultBranch = {{ $gitBranch | quote }}
+{{- if eq .chezmoi.os "windows" }}
+
+[cd]
+    command = "pwsh"
+    args = ["-NoLogo"]
+{{- end }}
