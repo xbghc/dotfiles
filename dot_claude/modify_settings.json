@@ -1,0 +1,20 @@
+{{- /* chezmoi:modify-template */ -}}
+{{- /*
+  只设置下面列出的共享项，settings.json 中其余内容（model、effort、Claude Code 运行时写入的状态等）保持本机原样。
+*/ -}}
+{{- $s := dict -}}
+{{- if .chezmoi.stdin | trim -}}
+{{-   $s = .chezmoi.stdin | fromJson -}}
+{{- end -}}
+{{- $s = $s | setValueAtPath "$schema" "https://json.schemastore.org/claude-code-settings.json" -}}
+{{- $s = $s | setValueAtPath "theme" "custom:catppuccin-latte" -}}
+{{- $s = $s | setValueAtPath "language" "Chinese" -}}
+{{- $s = $s | setValueAtPath "statusLine.type" "command" -}}
+{{- $s = $s | setValueAtPath "statusLine.command" (printf "node \"%s\"" (joinPath .chezmoi.homeDir ".claude" "statusline.js")) -}}
+{{- $s = $s | setValueAtPath "extraKnownMarketplaces.ghm-plugins.source.source" "github" -}}
+{{- $s = $s | setValueAtPath "extraKnownMarketplaces.ghm-plugins.source.repo" "xbghc/claude-plugins" -}}
+{{- $s = $s | setValueAtPath "extraKnownMarketplaces.ghm-plugins.autoUpdate" true -}}
+{{- if eq .chezmoi.os "windows" -}}
+{{-   $s = $s | setValueAtPath "env.CLAUDE_CODE_USE_POWERSHELL_TOOL" "1" -}}
+{{- end -}}
+{{- $s | toPrettyJson "  " -}}
