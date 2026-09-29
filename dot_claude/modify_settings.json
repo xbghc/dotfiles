@@ -11,9 +11,6 @@
 {{- $s = $s | setValueAtPath "language" "Chinese" -}}
 {{- $s = $s | setValueAtPath "statusLine.type" "command" -}}
 {{- $s = $s | setValueAtPath "statusLine.command" (printf "node \"%s\"" (joinPath .chezmoi.homeDir ".claude" "statusline.js")) -}}
-{{- $s = $s | setValueAtPath "extraKnownMarketplaces.ghm-plugins.source.source" "github" -}}
-{{- $s = $s | setValueAtPath "extraKnownMarketplaces.ghm-plugins.source.repo" "xbghc/claude-plugins" -}}
-{{- $s = $s | setValueAtPath "extraKnownMarketplaces.ghm-plugins.autoUpdate" true -}}
 {{- if eq .chezmoi.os "windows" -}}
 {{-   $s = $s | setValueAtPath "env.CLAUDE_CODE_USE_POWERSHELL_TOOL" "1" -}}
 {{- end -}}
