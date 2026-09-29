@@ -36,14 +36,19 @@ process.stdin.on('end', () => {
   process.stdout.write(render(data));
 });
 
-// ---- ANSI 颜色 ----
+// ---- 颜色：Catppuccin Latte（与 Claude Code 主题、终端、nvim、tmux 一致）----
+// 使用 24 位真彩色，不依赖终端的 ANSI 调色板
+const rgb = (hex) => {
+  const n = parseInt(hex.slice(1), 16);
+  return `\x1b[38;2;${(n >> 16) & 255};${(n >> 8) & 255};${n & 255}m`;
+};
 const C = {
   reset: '\x1b[0m',
-  dim: '\x1b[2m',
-  gray: '\x1b[90m',
-  green: '\x1b[32m',
-  yellow: '\x1b[33m',
-  red: '\x1b[31m',
+  dim: rgb('#9ca0b0'), // Overlay0：分隔符、括号内的刷新时间、无数据
+  gray: rgb('#6c6f85'), // Subtext0：标签 ctx / 5h / 7d
+  green: rgb('#40a02b'), // Green
+  yellow: rgb('#df8e1d'), // Yellow
+  red: rgb('#d20f39'), // Red
 };
 const NO_COLOR = !!process.env.NO_COLOR;
 const paint = (s, color) => (NO_COLOR ? s : color + s + C.reset);
