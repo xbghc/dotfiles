@@ -53,6 +53,8 @@ return {
             yank_absolute = yank(true),
             navigate_left = navigate("h", "-L"),
             navigate_right = navigate("l", "-R"),
+            navigate_down = navigate("j", "-D"),
+            navigate_up = navigate("k", "-U"),
           },
           win = {
             list = {
@@ -61,6 +63,8 @@ return {
                 ["Y"] = { "yank_absolute", mode = { "n", "x" } },
                 ["<c-h>"] = "navigate_left",
                 ["<c-l>"] = "navigate_right",
+                ["<c-j>"] = "navigate_down", -- 覆盖默认的 list_down（与 j 重复）
+                ["<c-k>"] = "navigate_up", -- 覆盖默认的 list_up（与 k 重复）
               },
             },
           },
