@@ -17,11 +17,6 @@ $scheme = [pscustomobject]@{
 $s = Get-Content $path -Raw | ConvertFrom-Json
 $s.schemes = @($s.schemes | Where-Object { $_.name -ne $scheme.name }) + $scheme
 $s.profiles.defaults | Add-Member -NotePropertyName colorScheme -NotePropertyValue $scheme.name -Force
-# Force the scheme on every profile: per-profile schemes and those from dynamic profile
-# fragments (e.g. WSL distros ship their own) can take precedence over profiles.defaults
-foreach ($p in $s.profiles.list) {
-  $p | Add-Member -NotePropertyName colorScheme -NotePropertyValue $scheme.name -Force
-}
 $font = [pscustomobject]@{ face = "JetBrainsMono Nerd Font" }
 $s.profiles.defaults | Add-Member -NotePropertyName font -NotePropertyValue $font -Force
 $s | ConvertTo-Json -Depth 32 | Set-Content $path -Encoding utf8NoBOM
