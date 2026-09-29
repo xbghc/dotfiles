@@ -1,0 +1,7 @@
+{
+  "Console log variable": {
+    "prefix": "clv",
+    "body": "console.log(`${1:variable}: \${${1:variable}}`);$0",
+    "description": "console.log(`variable: ${variable}`)"
+  }
+}
