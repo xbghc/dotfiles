@@ -1,0 +1,21 @@
+{{ if eq .chezmoi.os "windows" -}}
+# 为 Windows Terminal 添加 Catppuccin Latte 配色并设为默认（原文件备份为 settings.json.bak）
+$path = "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"
+if (-not (Test-Path $path)) { exit 0 }
+Copy-Item $path "$path.bak" -Force
+
+$scheme = [pscustomobject]@{
+  name = "Catppuccin Latte"
+  background = "#EFF1F5"; foreground = "#4C4F69"
+  cursorColor = "#DC8A78"; selectionBackground = "#ACB0BE"
+  black = "#5C5F77"; red = "#D20F39"; green = "#40A02B"; yellow = "#DF8E1D"
+  blue = "#1E66F5"; purple = "#EA76CB"; cyan = "#179299"; white = "#ACB0BE"
+  brightBlack = "#6C6F85"; brightRed = "#D20F39"; brightGreen = "#40A02B"; brightYellow = "#DF8E1D"
+  brightBlue = "#1E66F5"; brightPurple = "#EA76CB"; brightCyan = "#179299"; brightWhite = "#BCC0CC"
+}
+
+$s = Get-Content $path -Raw | ConvertFrom-Json
+$s.schemes = @($s.schemes | Where-Object { $_.name -ne $scheme.name }) + $scheme
+$s.profiles.defaults | Add-Member -NotePropertyName colorScheme -NotePropertyValue $scheme.name -Force
+$s | ConvertTo-Json -Depth 32 | Set-Content $path -Encoding utf8NoBOM
+{{ end -}}
