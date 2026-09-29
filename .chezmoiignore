@@ -1,4 +1,5 @@
 README.md
+.config/nvim/lazy-lock.json  # 各机器插件不同，锁文件不同步
 {{ if eq .chezmoi.os "windows" }}
 .tmux.conf
 .config/ghostty
