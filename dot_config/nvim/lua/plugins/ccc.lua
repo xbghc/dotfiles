@@ -5,6 +5,9 @@ return {
   {
     "uga-rosa/ccc.nvim",
     cmd = { "CccConvert", "CccPick", "CccHighlighterToggle" },
+    keys = {
+      { "<leader>ch", "<cmd>CccConvert<cr>", desc = "Convert Color (rgb ↔ hex)" },
+    },
     opts = function()
       local ccc = require("ccc")
       local convert = require("ccc.utils.convert")
