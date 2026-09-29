@@ -1,13 +1,13 @@
 # dotfiles
 
-由 [chezmoi](https://chezmoi.io) 管理。
+Managed by [chezmoi](https://chezmoi.io).
 
-## 新机器
+## New machine
 ```sh
 chezmoi init --apply xbghc
 ```
-Windows 上会自动创建联接 `%LOCALAPPDATA%\nvim` → `~/.config/nvim`（若该目录已存在需先移走）。
+On Windows a junction `%LOCALAPPDATA%\nvim` → `~/.config/nvim` is created automatically (move the directory away first if it already exists).
 
-## 日常
-- 修改后：`chezmoi re-add`（nvim 的 lazy-lock.json 不同步，各机器自行维护） → `chezmoi cd` → git commit/push
-- 拉取更新：`chezmoi update`
+## Daily use
+- After editing: `chezmoi re-add` (nvim's lazy-lock.json is not synced; each machine keeps its own) → `chezmoi cd` → git commit/push
+- Pull updates: `chezmoi update`

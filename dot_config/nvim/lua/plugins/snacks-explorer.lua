@@ -1,6 +1,6 @@
--- snacks explorer：y 复制相对路径（相对 nvim cwd），Y 复制绝对路径；支持多选与可视模式
--- 默认的 y 复制绝对路径并可配合 p 粘贴（复制文件）；改为相对路径后 p 依然可用（按 cwd 解析），
--- 若 cwd 已切换，用 Y 再 p 即可。
+-- snacks explorer: y copies the relative path (to nvim's cwd), Y the absolute path; supports multi-select and visual mode
+-- The default y copies absolute paths for use with p (copy files); p still works with relative paths (resolved against cwd);
+-- if the cwd has changed, use Y then p.
 local function yank(absolute)
   return function(picker)
     if vim.fn.mode():find("^[vV]") then
@@ -20,11 +20,11 @@ local function yank(absolute)
   end
 end
 
--- 文件树是浮在 layout 底座（普通 split）上的浮动窗口，从浮窗执行 wincmd 总会跳到编辑区，
--- vim-tmux-navigator 因此永远判断为“已在 nvim 内切换”，不会切到 tmux pane；
--- 而把焦点切到底座又会被 snacks 立刻转走。
--- 这里用 nvim_win_call（不触发 WinEnter）在底座窗口上查询相邻窗口：
--- 没有相邻窗口 => 已在 nvim 边缘，交给 tmux 切 pane；否则跳到相邻窗口。
+-- The file tree is a floating window over the layout's root (a regular split); wincmd from a float always jumps to the editor,
+-- so vim-tmux-navigator always thinks it moved within nvim and never switches tmux panes;
+-- and focusing the root window gets immediately redirected by snacks.
+-- Instead, query the neighbor of the root window with nvim_win_call (no WinEnter):
+-- no neighbor => at nvim's edge, let tmux switch panes; otherwise jump to the neighbor.
 local function navigate(dir, tmux_flag)
   return function(picker)
     local root = picker.layout and picker.layout.root
@@ -63,8 +63,8 @@ return {
                 ["Y"] = { "yank_absolute", mode = { "n", "x" } },
                 ["<c-h>"] = "navigate_left",
                 ["<c-l>"] = "navigate_right",
-                ["<c-j>"] = "navigate_down", -- 覆盖默认的 list_down（与 j 重复）
-                ["<c-k>"] = "navigate_up", -- 覆盖默认的 list_up（与 k 重复）
+                ["<c-j>"] = "navigate_down", -- overrides default list_down (same as j)
+                ["<c-k>"] = "navigate_up", -- overrides default list_up (same as k)
               },
             },
           },

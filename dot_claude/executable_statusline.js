@@ -1,18 +1,18 @@
 #!/usr/bin/env node
 /**
- * Claude Code 状态栏脚本
- * 只显示两项：当前上下文占用 + 订阅用量（5 小时窗口 / 7 天窗口）。
+ * Claude Code status line script
+ * Shows two things only: current context usage + subscription usage (5-hour / 7-day windows).
  *
- * 数据来源：Claude Code 通过 stdin 传入的 JSON。
- *   - 上下文占用：context_window.{used_percentage, total_input_tokens, context_window_size}
- *   - 订阅用量：  rate_limits.{five_hour, seven_day}.used_percentage
- *     （订阅用量仅 Pro/Max 账号、且本会话发出过至少一次请求后才有数据）
+ * Data source: JSON passed by Claude Code on stdin.
+ *   - Context usage:      context_window.{used_percentage, total_input_tokens, context_window_size}
+ *   - Subscription usage: rate_limits.{five_hour, seven_day}.used_percentage
+ *     (only available on Pro/Max accounts, after at least one request in this session)
  *
- * 设计：纯 stdin 解析，无文件 IO、无子进程，启动快、适合频繁刷新的状态栏。
- * 字段缺失时优雅降级为 “–”，不会报错。
+ * Design: pure stdin parsing, no file IO, no child processes; fast startup for frequent refreshes.
+ * Missing fields degrade gracefully to "–" instead of erroring.
  *
- * 调试：设置环境变量 CLAUDE_STATUSLINE_DEBUG=1 时，会把收到的原始 JSON
- *       写到 ~/.claude/statusline-last-input.json，方便排查真实数据结构。
+ * Debug: with CLAUDE_STATUSLINE_DEBUG=1 the raw JSON received is written
+ *        to ~/.claude/statusline-last-input.json to inspect the real data shape.
  */
 
 'use strict';
@@ -22,7 +22,7 @@ process.stdin.setEncoding('utf8');
 process.stdin.on('data', (chunk) => { raw += chunk; });
 process.stdin.on('end', () => {
   let data = {};
-  try { data = JSON.parse(raw) || {}; } catch { /* 容忍空/坏输入 */ }
+  try { data = JSON.parse(raw) || {}; } catch { /* tolerate empty/invalid input */ }
 
   if (process.env.CLAUDE_STATUSLINE_DEBUG) {
     try {
@@ -30,32 +30,32 @@ process.stdin.on('end', () => {
       const path = require('path');
       const os = require('os');
       fs.writeFileSync(path.join(os.homedir(), '.claude', 'statusline-last-input.json'), raw);
-    } catch { /* 调试写盘失败不影响状态栏 */ }
+    } catch { /* a failed debug write must not break the status line */ }
   }
 
   process.stdout.write(render(data));
 });
 
-// ---- 颜色：Catppuccin Latte（与 Claude Code 主题、终端、nvim、tmux 一致）----
-// 使用 24 位真彩色，不依赖终端的 ANSI 调色板
+// ---- Colors: Catppuccin Latte (matches the Claude Code theme, terminal, nvim, tmux) ----
+// 24-bit truecolor, independent of the terminal's ANSI palette
 const rgb = (hex) => {
   const n = parseInt(hex.slice(1), 16);
   return `\x1b[38;2;${(n >> 16) & 255};${(n >> 8) & 255};${n & 255}m`;
 };
 const C = {
   reset: '\x1b[0m',
-  dim: rgb('#9ca0b0'), // Overlay0：分隔符、括号内的刷新时间、无数据
-  gray: rgb('#6c6f85'), // Subtext0：标签 ctx / 5h / 7d
+  dim: rgb('#9ca0b0'), // Overlay0: separators, reset times in parentheses, no data
+  gray: rgb('#6c6f85'), // Subtext0: labels ctx / 5h / 7d
   green: rgb('#40a02b'), // Green
   yellow: rgb('#df8e1d'), // Yellow
   red: rgb('#d20f39'), // Red
 };
 const NO_COLOR = !!process.env.NO_COLOR;
 const paint = (s, color) => (NO_COLOR ? s : color + s + C.reset);
-// 用量阈值配色：<50% 绿、50~79% 黄、>=80% 红
+// Usage thresholds: <50% green, 50-79% yellow, >=80% red
 const byPct = (p) => (p >= 80 ? C.red : p >= 50 ? C.yellow : C.green);
 
-// 把 token 数格式化成人类可读：16234 -> 16.2k，1000000 -> 1M
+// Human-readable token counts: 16234 -> 16.2k, 1000000 -> 1M
 function fmtTokens(n) {
   if (!Number.isFinite(n)) return '?';
   if (n >= 1e6) return (n / 1e6).toFixed(1).replace(/\.0$/, '') + 'M';
@@ -63,16 +63,16 @@ function fmtTokens(n) {
   return String(n);
 }
 
-// 从 rate_limit 对象里取出刷新时间戳，兼容多种可能的字段命名与单位（秒/毫秒）
+// Extract the reset timestamp from a rate_limit object, tolerating several field names and units (s/ms)
 function pickResetAt(obj) {
   if (!obj) return undefined;
   let v = obj.resets_at ?? obj.reset_at ?? obj.resetsAt ?? obj.reset ?? obj.resets_at_unix;
   if (typeof v === 'string' && /^\d+$/.test(v)) v = Number(v);
   if (!Number.isFinite(v)) return undefined;
-  return v > 1e12 ? Math.floor(v / 1000) : v; // 毫秒 -> 秒
+  return v > 1e12 ? Math.floor(v / 1000) : v; // ms -> s
 }
 
-// 把刷新时间戳格式化成“距现在还剩多久”：2h13m / 47m / 5d3h / <1m
+// Format the reset timestamp as time remaining: 2h13m / 47m / 5d3h / <1m
 function fmtResetIn(resetAtSec) {
   if (!Number.isFinite(resetAtSec)) return '';
   const s = resetAtSec - Math.floor(Date.now() / 1000);
@@ -89,11 +89,11 @@ function fmtResetIn(resetAtSec) {
 function render(d) {
   const seg = [];
 
-  // ---- 上下文占用 ----
+  // ---- Context usage ----
   const cw = d.context_window;
   if (cw && (cw.used_percentage != null || cw.total_input_tokens != null)) {
     const pct = Math.round(cw.used_percentage ?? 0);
-    const used = cw.total_input_tokens;     // 已含缓存读写
+    const used = cw.total_input_tokens;     // includes cache reads/writes
     const size = cw.context_window_size;
     let tok = '';
     if (Number.isFinite(used)) {
@@ -104,7 +104,7 @@ function render(d) {
     seg.push(paint('ctx', C.gray) + ' ' + paint('–', C.dim));
   }
 
-  // ---- 订阅用量 ----
+  // ---- Subscription usage ----
   const rl = d.rate_limits;
   const subParts = [];
   const rlSeg = (label, obj) => {
@@ -112,7 +112,7 @@ function render(d) {
       const p = Math.round(obj.used_percentage);
       let out = paint(label, C.gray) + ' ' + paint(p + '%', byPct(p));
       const inStr = fmtResetIn(pickResetAt(obj));
-      if (inStr) out += paint(' (' + inStr + ')', C.dim); // 括号内为距刷新剩余时间
+      if (inStr) out += paint(' (' + inStr + ')', C.dim); // time until reset, in parentheses
       return out;
     }
     return null;
@@ -126,7 +126,7 @@ function render(d) {
   if (subParts.length) {
     seg.push(subParts.join(paint(' · ', C.dim)));
   } else {
-    // 非 Pro/Max，或本会话还没发出请求 -> 暂无订阅数据
+    // not Pro/Max, or no request sent yet in this session -> no subscription data
     seg.push(paint('sub –', C.dim));
   }
 

@@ -1,8 +1,8 @@
--- markdown、纯文本、git 提交信息：关闭 lint 与自动补全（"" 为无 filetype 的文件）
+-- markdown, plain text, git commit messages: disable linting and completion ("" = buffers without a filetype)
 local prose_ft = { markdown = true, ["markdown.mdx"] = true, text = true, gitcommit = true, [""] = true }
 
 return {
-  -- 关闭 markdownlint 检查
+  -- disable markdownlint
   {
     "mfussenegger/nvim-lint",
     optional = true,
@@ -13,7 +13,7 @@ return {
       },
     },
   },
-  -- markdown / 纯文本中关闭自动补全
+  -- disable completion in markdown / plain text
   {
     "saghen/blink.cmp",
     optional = true,

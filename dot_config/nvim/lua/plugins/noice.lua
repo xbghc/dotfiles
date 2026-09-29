@@ -1,6 +1,6 @@
--- noice 自带的 hover 用 buf_request 逐个渲染每个 LSP 的响应，后返回的会覆盖先返回的。
--- 这里关闭 noice 的 hover 替换，改用自己的实现：先收齐所有 LSP 的结果并合并，
--- 再交给 noice 渲染，保留 noice 的窗口样式与 <C-f>/<C-b> 滚动。
+-- noice's hover renders each LSP response separately via buf_request, so later responses overwrite earlier ones.
+-- Disable noice's hover override and use our own: collect and merge results from all LSP clients,
+-- then render with noice, keeping its window style and <C-f>/<C-b> scrolling.
 
 local function hover()
   local Docs = require("noice.lsp.docs")
@@ -67,7 +67,7 @@ return {
   "folke/noice.nvim",
   opts = {
     lsp = {
-      hover = { enabled = false }, -- 不让 noice 替换 vim.lsp.buf.hover
+      hover = { enabled = false }, -- keep noice from replacing vim.lsp.buf.hover
     },
   },
   init = function()

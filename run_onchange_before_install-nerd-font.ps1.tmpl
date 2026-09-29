@@ -1,8 +1,8 @@
 {{ if eq .chezmoi.os "windows" -}}
-# 为当前用户安装 JetBrainsMono Nerd Font（无需管理员），已安装则跳过
+# Install JetBrainsMono Nerd Font for the current user (no admin needed); skip if already installed
 $ErrorActionPreference = "Stop"
 
-# 检测：读取系统已安装字体（含为所有用户安装、旧版 "Nerd Font" 命名、NFM/NFP 变体）
+# Detect via installed font families (covers all-users installs, legacy "Nerd Font" naming, NFM/NFP variants)
 Add-Type -AssemblyName System.Drawing
 $families = (New-Object System.Drawing.Text.InstalledFontCollection).Families.Name
 if ($families | Where-Object { $_ -match '^JetBrainsMono.*(Nerd Font|NF)' }) { exit 0 }
@@ -19,7 +19,7 @@ New-Item -ItemType Directory -Force $fontDir | Out-Null
 Get-ChildItem $tmp -Filter "JetBrainsMonoNerdFont-*.ttf" | ForEach-Object {
   $dest = Join-Path $fontDir $_.Name
   Copy-Item $_.FullName $dest -Force
-  # 注册表值名仅作显示用，直接用文件名即可
+  # the registry value name is display-only, so the file name is fine
   New-ItemProperty $regKey -Name "$($_.BaseName) (TrueType)" -Value $dest -PropertyType String -Force | Out-Null
 }
 Remove-Item $zip, $tmp -Recurse -Force

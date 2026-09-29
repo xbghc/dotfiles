@@ -1,5 +1,5 @@
 {{ if eq .chezmoi.os "windows" -}}
-# 为 Windows Terminal 添加 Catppuccin Latte 配色、设置 Nerd Font 字体并设为默认（原文件备份为 settings.json.bak）
+# Add the Catppuccin Latte scheme and Nerd Font to Windows Terminal as defaults (original backed up as settings.json.bak)
 $path = "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"
 if (-not (Test-Path $path)) { exit 0 }
 Copy-Item $path "$path.bak" -Force

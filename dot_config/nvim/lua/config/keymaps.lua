@@ -2,13 +2,13 @@
 -- Default keymaps that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/keymaps.lua
 -- Add any additional keymaps here
 
--- 复制当前文件路径（统一使用 / 分隔符）
--- 普通模式：<leader>fl 复制 path:行号；可视模式：复制 path:起始行-结束行
+-- Copy the current file path (always using / as separator)
+-- Normal mode: <leader>fl copies path:line; visual mode: path:start-end
 local function copy_path(absolute, with_line)
   return function()
     local path = vim.fn.expand(absolute and "%:p" or "%:.")
     if path == "" then
-      return vim.notify("当前 buffer 没有文件路径", vim.log.levels.WARN)
+      return vim.notify("Current buffer has no file path", vim.log.levels.WARN)
     end
     path = path:gsub("\\", "/")
     if with_line then

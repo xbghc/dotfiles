@@ -1,5 +1,5 @@
 README.md
-# 各机器插件不同，锁文件不同步
+# Plugins differ per machine, so the lockfile is not synced
 .config/nvim/lazy-lock.json
 {{ if eq .chezmoi.os "windows" }}
 .tmux.conf

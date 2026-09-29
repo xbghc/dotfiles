@@ -1,6 +1,6 @@
--- 颜色格式转换：光标放在颜色上执行 :CccConvert，在 rgb() 与 hex 之间互转
+-- Color conversion: run :CccConvert on a color to convert between rgb() and hex
 --   rgb(12, 34, 56)         <-> #0c2238
---   rgba(12, 34, 56, 0.5)   <-> #0c223880   （有透明通道则保留）
+--   rgba(12, 34, 56, 0.5)   <-> #0c223880   (alpha is preserved when present)
 return {
   {
     "uga-rosa/ccc.nvim",
@@ -12,7 +12,7 @@ return {
       local ccc = require("ccc")
       local convert = require("ccc.utils.convert")
 
-      -- ccc 内置的 css_rgb 输出为 `rgb(12 34 56 / 50%)`，这里改为逗号写法
+      -- ccc's built-in css_rgb output is `rgb(12 34 56 / 50%)`; use the comma syntax instead
       local rgb_comma = {
         name = "RGB (comma)",
         str = function(RGB, A)

@@ -1,6 +1,6 @@
--- mini.ai 默认的 an/in（next textobject）会覆盖 nvim 0.12 内置的
--- treesitter 增量选择（an 扩大到父节点 / in 缩小到子节点），这里关掉。
--- mini.ai 默认 search_method = "cover_or_next"，a( 等本身就会找下一个，影响不大。
+-- mini.ai's default an/in (next textobject) overrides nvim 0.12's built-in
+-- treesitter incremental selection (an: parent node / in: child node), so disable them.
+-- mini.ai's default search_method = "cover_or_next" already finds the next one for a( etc., so little is lost.
 return {
   "nvim-mini/mini.ai",
   opts = {
