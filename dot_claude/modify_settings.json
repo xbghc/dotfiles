@@ -11,7 +11,4 @@
 {{- $s = $s | setValueAtPath "language" "Chinese" -}}
 {{- $s = $s | setValueAtPath "statusLine.type" "command" -}}
 {{- $s = $s | setValueAtPath "statusLine.command" (printf "node \"%s\"" (joinPath .chezmoi.homeDir ".claude" "statusline.js")) -}}
-{{- if eq .chezmoi.os "windows" -}}
-{{-   $s = $s | setValueAtPath "env.CLAUDE_CODE_USE_POWERSHELL_TOOL" "1" -}}
-{{- end -}}
 {{- $s | toPrettyJson "  " -}}
