@@ -1,9 +1,11 @@
 {{ if eq .chezmoi.os "windows" -}}
 # 为当前用户安装 JetBrainsMono Nerd Font（无需管理员），已安装则跳过
 $ErrorActionPreference = "Stop"
-$regKey = "HKCU:\Software\Microsoft\Windows NT\CurrentVersion\Fonts"
-$installed = (Get-ItemProperty $regKey -ErrorAction SilentlyContinue).PSObject.Properties.Name -match "^JetBrainsMono NF "
-if ($installed) { exit 0 }
+
+# 检测：读取系统已安装字体（含为所有用户安装、旧版 "Nerd Font" 命名、NFM/NFP 变体）
+Add-Type -AssemblyName System.Drawing
+$families = (New-Object System.Drawing.Text.InstalledFontCollection).Families.Name
+if ($families | Where-Object { $_ -match '^JetBrainsMono.*(Nerd Font|NF)' }) { exit 0 }
 
 $tmp = Join-Path $env:TEMP "JetBrainsMonoNF"
 $zip = "$tmp.zip"
@@ -12,14 +14,13 @@ Invoke-WebRequest "https://github.com/ryanoasis/nerd-fonts/releases/latest/downl
 Expand-Archive $zip -DestinationPath $tmp -Force
 
 $fontDir = "$env:LOCALAPPDATA\Microsoft\Windows\Fonts"
+$regKey = "HKCU:\Software\Microsoft\Windows NT\CurrentVersion\Fonts"
 New-Item -ItemType Directory -Force $fontDir | Out-Null
-Add-Type -AssemblyName PresentationCore
 Get-ChildItem $tmp -Filter "JetBrainsMonoNerdFont-*.ttf" | ForEach-Object {
   $dest = Join-Path $fontDir $_.Name
   Copy-Item $_.FullName $dest -Force
-  $gtf = New-Object System.Windows.Media.GlyphTypeface([uri]$dest)
-  $name = "$($gtf.Win32FamilyNames['en-US']) $($gtf.Win32FaceNames['en-US']) (TrueType)"
-  New-ItemProperty $regKey -Name $name -Value $dest -PropertyType String -Force | Out-Null
+  # 注册表值名仅作显示用，直接用文件名即可
+  New-ItemProperty $regKey -Name "$($_.BaseName) (TrueType)" -Value $dest -PropertyType String -Force | Out-Null
 }
 Remove-Item $zip, $tmp -Recurse -Force
 Write-Host "JetBrainsMono Nerd Font installed. Restart Windows Terminal to use it."
