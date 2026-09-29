@@ -1,5 +1,5 @@
 {{ if eq .chezmoi.os "windows" -}}
-# 为 Windows Terminal 添加 Catppuccin Latte 配色并设为默认（原文件备份为 settings.json.bak）
+# 为 Windows Terminal 添加 Catppuccin Latte 配色、设置 Nerd Font 字体并设为默认（原文件备份为 settings.json.bak）
 $path = "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"
 if (-not (Test-Path $path)) { exit 0 }
 Copy-Item $path "$path.bak" -Force
@@ -17,5 +17,7 @@ $scheme = [pscustomobject]@{
 $s = Get-Content $path -Raw | ConvertFrom-Json
 $s.schemes = @($s.schemes | Where-Object { $_.name -ne $scheme.name }) + $scheme
 $s.profiles.defaults | Add-Member -NotePropertyName colorScheme -NotePropertyValue $scheme.name -Force
+$font = [pscustomobject]@{ face = "JetBrainsMono Nerd Font" }
+$s.profiles.defaults | Add-Member -NotePropertyName font -NotePropertyValue $font -Force
 $s | ConvertTo-Json -Depth 32 | Set-Content $path -Encoding utf8NoBOM
 {{ end -}}
