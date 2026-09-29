@@ -6,8 +6,7 @@
 ```sh
 chezmoi init --apply xbghc
 ```
-Windows 上会自动创建联接 `%LOCALAPPDATA%
-vim` → `~/.config/nvim`（若该目录已存在需先移走）。
+Windows 上会自动创建联接 `%LOCALAPPDATA%\nvim` → `~/.config/nvim`（若该目录已存在需先移走）。
 
 ## 日常
 - 修改后：`chezmoi re-add` → `chezmoi cd` → git commit/push
