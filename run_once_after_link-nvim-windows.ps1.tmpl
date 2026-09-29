@@ -1,0 +1,14 @@
+{{ if eq .chezmoi.os "windows" -}}
+# Windows 上的 nvim 默认读取 %LOCALAPPDATA%\nvim，用目录联接指向 ~/.config/nvim
+$link = "$env:LOCALAPPDATA\nvim"
+$target = "$env:USERPROFILE\.config\nvim"
+if (Test-Path $link) {
+  $item = Get-Item $link -Force
+  if ($item.LinkType -ne "Junction") {
+    Write-Warning "$link 已存在且不是联接，请先手动备份/删除后重新运行 chezmoi apply"
+    exit 1
+  }
+} else {
+  New-Item -ItemType Junction -Path $link -Target $target | Out-Null
+}
+{{ end -}}
