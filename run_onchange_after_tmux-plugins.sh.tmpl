@@ -4,6 +4,16 @@
 # Install/clean TPM plugins whenever the plugin list changes
 command -v tmux >/dev/null 2>&1 || exit 0
 [ -x "$HOME/.tmux/plugins/tpm/bin/install_plugins" ] || exit 0
+
+# TPM names plugin directories after the repo name, so catppuccin/tmux and other
+# "*/tmux" themes (e.g. nordtheme/tmux) share ~/.tmux/plugins/tmux. If another theme
+# occupies it, TPM treats catppuccin as installed and silently loads the wrong theme.
+dir="$HOME/.tmux/plugins/tmux"
+if [ -d "$dir" ] && [ ! -f "$dir/catppuccin.tmux" ]; then
+  echo "Removing $dir: occupied by a different plugin, not catppuccin" >&2
+  rm -rf "$dir"
+fi
+
 "$HOME/.tmux/plugins/tpm/bin/install_plugins"
 "$HOME/.tmux/plugins/tpm/bin/clean_plugins"
 {{ end -}}
