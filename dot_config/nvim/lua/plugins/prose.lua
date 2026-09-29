@@ -1,5 +1,5 @@
--- markdown 和纯文本文件：关闭 lint 与自动补全（"" 为无 filetype 的文件）
-local prose_ft = { markdown = true, ["markdown.mdx"] = true, text = true, [""] = true }
+-- markdown、纯文本、git 提交信息：关闭 lint 与自动补全（"" 为无 filetype 的文件）
+local prose_ft = { markdown = true, ["markdown.mdx"] = true, text = true, gitcommit = true, [""] = true }
 
 return {
   -- 关闭 markdownlint 检查
