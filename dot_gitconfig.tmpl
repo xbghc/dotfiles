@@ -1,0 +1,18 @@
+[user]
+	name = {{ .gitName }}
+	email = {{ .gitEmail }}
+[init]
+	defaultBranch = {{ .gitDefaultBranch }}
+[core]
+	autocrlf = input
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+[credential "https://gitcode.com"]
+	provider = generic
+{{- if eq .chezmoi.os "windows" }}
+[safe]
+	directory = %(prefix)///wsl.localhost/Ubuntu/home/ghm/projects/MateChat
+{{- end }}
