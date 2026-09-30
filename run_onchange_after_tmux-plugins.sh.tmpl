@@ -13,6 +13,12 @@ if [ -d "$dir" ] && [ ! -f "$dir/catppuccin.tmux" ]; then
   echo "Removing $dir: occupied by a different plugin, not catppuccin" >&2
   rm -rf "$dir"
 fi
+# TPM never re-checks out an installed plugin, so a checkout of an older pin
+# (e.g. the v2.1.3 tag) would stick; reinstall it to follow main.
+if [ -d "$dir" ] && [ "$(git -C "$dir" rev-parse --abbrev-ref HEAD 2>/dev/null)" != "main" ]; then
+  echo "Reinstalling $dir: catppuccin not on main" >&2
+  rm -rf "$dir"
+fi
 
 "$HOME/.tmux/plugins/tpm/bin/install_plugins"
 "$HOME/.tmux/plugins/tpm/bin/clean_plugins"
