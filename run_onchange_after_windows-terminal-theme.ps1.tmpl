@@ -1,5 +1,7 @@
 {{ if eq .chezmoi.os "windows" -}}
 # Add the Catppuccin Latte scheme and Nerd Font to Windows Terminal as defaults (original backed up as settings.json.bak)
+# Font size is computed per machine; set terminalFontSize in chezmoi data to override.
+# Re-run after changing monitors: chezmoi state delete-bucket --bucket=scriptState && chezmoi apply
 $path = "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"
 if (-not (Test-Path $path)) { exit 0 }
 Copy-Item $path "$path.bak" -Force
@@ -17,7 +19,43 @@ $scheme = [pscustomobject]@{
 $s = Get-Content $path -Raw | ConvertFrom-Json
 $s.schemes = @($s.schemes | Where-Object { $_.name -ne $scheme.name }) + $scheme
 $s.profiles.defaults | Add-Member -NotePropertyName colorScheme -NotePropertyValue $scheme.name -Force
+
+# Font size from the primary monitor: aim for capital letters subtending ~20 arcmin
+# (ANSI/HFES 100 preferred 20-22') at a viewing distance guessed from screen size.
+function Get-FontSize {
+  Add-Type -Namespace ChezmoiDpi -Name U -MemberDefinition @'
+[DllImport("user32.dll")] public static extern bool SetProcessDPIAware();
+[DllImport("user32.dll")] public static extern uint GetDpiForSystem();
+[DllImport("user32.dll")] public static extern IntPtr GetDC(IntPtr h);
+[DllImport("gdi32.dll")] public static extern int GetDeviceCaps(IntPtr hdc, int i);
+'@
+  [void][ChezmoiDpi.U]::SetProcessDPIAware()
+  $dc = [ChezmoiDpi.U]::GetDC([IntPtr]::Zero)
+  $pxW = [ChezmoiDpi.U]::GetDeviceCaps($dc, 118)  # DESKTOPHORZRES: physical pixels
+  $pxH = [ChezmoiDpi.U]::GetDeviceCaps($dc, 117)
+  $scale = [ChezmoiDpi.U]::GetDpiForSystem() / 96
+  # EDID physical size (cm); with several monitors pick the one matching the primary's aspect ratio
+  $mons = @(Get-CimInstance -Namespace root\wmi WmiMonitorBasicDisplayParams -ErrorAction Stop |
+    Where-Object { $_.Active -and $_.MaxHorizontalImageSize -gt 0 })
+  $mon = $mons | Sort-Object { [math]::Abs($_.MaxHorizontalImageSize / $_.MaxVerticalImageSize - $pxW / $pxH) } |
+    Select-Object -First 1
+  if (-not $mon) { return $null }
+  $widthMm = $mon.MaxHorizontalImageSize * 10
+  $ppmm = $pxW / $widthMm
+  $diagIn = [math]::Sqrt([math]::Pow($mon.MaxHorizontalImageSize, 2) + [math]::Pow($mon.MaxVerticalImageSize, 2)) / 2.54
+  $distMm = if ($diagIn -lt 16) { 500 } else { 650 }            # laptop vs desktop monitor
+  $capMm = $distMm * [math]::Tan(20 / 60 * [math]::PI / 180)    # 20 arcmin
+  $capEm = 0.73                                                  # JetBrains Mono cap height
+  $pt = $capMm * $ppmm / $capEm / ($scale * 96 / 72)
+  [math]::Min(20, [math]::Max(10, [math]::Round($pt * 2) / 2))
+}
+{{- if hasKey . "terminalFontSize" }}
+$size = {{ .terminalFontSize }}
+{{- else }}
+$size = try { Get-FontSize } catch { $null }
+{{- end }}
 $font = [pscustomobject]@{ face = "JetBrainsMono Nerd Font" }
+if ($size) { $font | Add-Member -NotePropertyName size -NotePropertyValue $size; Write-Host "Windows Terminal font size: $size" }
 $s.profiles.defaults | Add-Member -NotePropertyName font -NotePropertyValue $font -Force
 $s | ConvertTo-Json -Depth 32 | Set-Content $path -Encoding utf8NoBOM
 {{ end -}}
