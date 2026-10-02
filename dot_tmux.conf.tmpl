@@ -31,7 +31,19 @@ set -g @plugin "christoomey/vim-tmux-navigator"   # C-h/j/k/l across tmux panes 
 set -g @plugin "catppuccin/tmux#main"
 set -g @plugin "tmux-plugins/tmux-cpu"
 set -g @plugin "tmux-plugins/tmux-battery"
+{{- if .tmuxResurrect }}
+set -g @plugin "tmux-plugins/tmux-resurrect"   # prefix C-s save / prefix C-r restore
+set -g @plugin "tmux-plugins/tmux-continuum"   # auto-save every 15 min, auto-restore on server start
+{{- end }}
 
+{{ if .tmuxResurrect -}}
+# ---- Resurrect / Continuum ----
+set -g @resurrect-capture-pane-contents "on"
+set -g @resurrect-strategy-nvim "session"
+set -g @continuum-restore "on"
+set -g @continuum-save-interval "15"
+
+{{ end -}}
 # ---- Catppuccin (configuration recommended by its README) ----
 set -g @catppuccin_flavor "latte"
 set -g @catppuccin_window_status_style "rounded"

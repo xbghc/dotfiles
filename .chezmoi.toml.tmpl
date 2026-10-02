@@ -1,10 +1,15 @@
 {{- $gitName := promptStringOnce . "gitName" "Git user.name" -}}
 {{- $gitEmail := promptStringOnce . "gitEmail" "Git user.email" -}}
 {{- $gitBranch := promptStringOnce . "gitDefaultBranch" "Git init.defaultBranch" "main" -}}
+{{- $tmuxResurrect := false -}}
+{{- if ne .chezmoi.os "windows" -}}
+{{-   $tmuxResurrect = promptBoolOnce . "tmuxResurrect" "Enable tmux-resurrect + tmux-continuum (auto save/restore sessions)" false -}}
+{{- end -}}
 [data]
     gitName = {{ $gitName | quote }}
     gitEmail = {{ $gitEmail | quote }}
     gitDefaultBranch = {{ $gitBranch | quote }}
+    tmuxResurrect = {{ $tmuxResurrect }}
 {{- if eq .chezmoi.os "windows" }}
 
 [cd]
