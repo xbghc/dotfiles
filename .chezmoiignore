@@ -5,3 +5,7 @@ README.md
 .tmux.conf
 .config/ghostty
 {{ end }}
+{{ if and (hasKey . "syncClaude") (not .syncClaude) }}
+.claude
+.claude/**
+{{ end }}
