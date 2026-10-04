@@ -52,9 +52,9 @@ const C = {
 };
 // Nerd Font glyphs used as labels (written as escapes so editors/fonts can't mangle them)
 const ICON = {
-  ctx: '\uf2db', // nf-fa-microchip: context window
-  h5: '\uf017', // nf-fa-clock_o: 5-hour window
-  d7: '\uf073', // nf-fa-calendar: 7-day window
+  ctx: '\u{f09d1}', // nf-md-brain: context window
+  h5: '\u{f0150}', // nf-md-clock_outline: 5-hour window
+  d7: '\u{f00ed}', // nf-md-calendar: 7-day window
 };
 const NO_COLOR = !!process.env.NO_COLOR;
 const paint = (s, color) => (NO_COLOR ? s : color + s + C.reset);
