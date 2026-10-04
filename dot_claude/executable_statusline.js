@@ -45,10 +45,16 @@ const rgb = (hex) => {
 const C = {
   reset: '\x1b[0m',
   dim: rgb('#9ca0b0'), // Overlay0: separators, reset times in parentheses, no data
-  gray: rgb('#6c6f85'), // Subtext0: labels ctx / 5h / 7d
+  gray: rgb('#6c6f85'), // Subtext0: label icons (ctx / 5h / 7d)
   green: rgb('#40a02b'), // Green
   yellow: rgb('#df8e1d'), // Yellow
   red: rgb('#d20f39'), // Red
+};
+// Nerd Font glyphs used as labels (written as escapes so editors/fonts can't mangle them)
+const ICON = {
+  ctx: '\uf2db', // nf-fa-microchip: context window
+  h5: '\uf017', // nf-fa-clock_o: 5-hour window
+  d7: '\uf073', // nf-fa-calendar: 7-day window
 };
 const NO_COLOR = !!process.env.NO_COLOR;
 const paint = (s, color) => (NO_COLOR ? s : color + s + C.reset);
@@ -99,9 +105,9 @@ function render(d) {
     if (Number.isFinite(used)) {
       tok = fmtTokens(used) + (Number.isFinite(size) ? '/' + fmtTokens(size) : '') + ' ';
     }
-    seg.push(paint('ctx', C.gray) + ' ' + tok + paint(pct + '%', byPct(pct)));
+    seg.push(paint(ICON.ctx, C.gray) + ' ' + tok + paint(pct + '%', byPct(pct)));
   } else {
-    seg.push(paint('ctx', C.gray) + ' ' + paint('–', C.dim));
+    seg.push(paint(ICON.ctx, C.gray) + ' ' + paint('–', C.dim));
   }
 
   // ---- Subscription usage ----
@@ -118,8 +124,8 @@ function render(d) {
     return null;
   };
   if (rl) {
-    const a = rlSeg('5h', rl.five_hour);
-    const b = rlSeg('7d', rl.seven_day);
+    const a = rlSeg(ICON.h5, rl.five_hour);
+    const b = rlSeg(ICON.d7, rl.seven_day);
     if (a) subParts.push(a);
     if (b) subParts.push(b);
   }
@@ -127,7 +133,7 @@ function render(d) {
     seg.push(subParts.join(paint(' · ', C.dim)));
   } else {
     // not Pro/Max, or no request sent yet in this session -> no subscription data
-    seg.push(paint('sub –', C.dim));
+    seg.push(paint(ICON.h5 + ' –', C.dim));
   }
 
   return seg.join(paint('  │  ', C.dim));
