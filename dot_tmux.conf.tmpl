@@ -60,7 +60,9 @@ set -agF status-right "#{E:@catppuccin_status_cpu}"
 set -agF status-right "#{E:@catppuccin_status_ram}"
 set -ag status-right "#{E:@catppuccin_status_session}"
 set -ag status-right "#{E:@catppuccin_status_uptime}"
-set -agF status-right "#{E:@catppuccin_status_battery}"
+# Battery module only on machines that actually have one (Linux/WSL: sysfs BAT*, macOS: pmset)
+if-shell "ls /sys/class/power_supply/BAT* >/dev/null 2>&1 || pmset -g batt 2>/dev/null | grep -q InternalBattery" \
+    'set -agF status-right "#{E:@catppuccin_status_battery}"'
 
 # Loads all plugins, including tmux-cpu and tmux-battery used above; must be last
 run "~/.tmux/plugins/tpm/tpm"
