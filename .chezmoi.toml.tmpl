@@ -12,6 +12,10 @@
     gitDefaultBranch = {{ $gitBranch | quote }}
     syncClaude = {{ $syncClaude }}
     tmuxResurrect = {{ $tmuxResurrect }}
+{{- /* Optional per-machine override of the computed Windows Terminal font size: add it to [data] by hand; it is kept on re-init */ -}}
+{{- if hasKey . "terminalFontSize" }}
+    terminalFontSize = {{ .terminalFontSize }}
+{{- end }}
 {{- if eq .chezmoi.os "windows" }}
 
 [cd]
