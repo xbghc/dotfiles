@@ -1,0 +1,57 @@
+{{- /* chezmoi:modify-template */ -}}
+{{- /*
+  Only the rules below are set, in every profile (matched by description, so renaming one leaves the old copy behind);
+  devices, other rules and everything else Karabiner-Elements writes are left as-is on each machine.
+*/ -}}
+{{- $managed := get (`{"rules": [
+  {
+    "description": "Ctrl+C copies in GUI apps (terminals and VSCode keep it as interrupt)",
+    "manipulators": [
+      {
+        "type": "basic",
+        "from": {
+          "key_code": "c",
+          "modifiers": { "mandatory": ["control"], "optional": ["caps_lock"] }
+        },
+        "to": [{ "key_code": "c", "modifiers": ["left_command"] }],
+        "conditions": [
+          {
+            "type": "frontmost_application_unless",
+            "bundle_identifiers": [
+              "^com\\.apple\\.Terminal$",
+              "^com\\.googlecode\\.iterm2$",
+              "^com\\.mitchellh\\.ghostty$",
+              "^net\\.kovidgoyal\\.kitty$",
+              "^(org|io)\\.alacritty$",
+              "^com\\.github\\.wez\\.wezterm$",
+              "^dev\\.warp\\.Warp-Stable$",
+              "^com\\.microsoft\\.VSCode(Insiders)?$"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]}` | fromJson) "rules" -}}
+{{- $names := list -}}
+{{- range $managed -}}
+{{-   $names = append $names (get . "description") -}}
+{{- end -}}
+{{- $k := dict -}}
+{{- if .chezmoi.stdin | trim -}}
+{{-   $k = .chezmoi.stdin | fromJson -}}
+{{- end -}}
+{{- $profiles := get $k "profiles" | default (list (dict "name" "Default profile" "selected" true)) -}}
+{{- range $p := $profiles -}}
+{{-   $cm := get $p "complex_modifications" | default (dict) -}}
+{{-   $rules := $managed -}}
+{{-   range (get $cm "rules" | default (list)) -}}
+{{-     if not (has (get . "description") $names) -}}
+{{-       $rules = append $rules . -}}
+{{-     end -}}
+{{-   end -}}
+{{-   $_ := set $cm "rules" $rules -}}
+{{-   $_ := set $p "complex_modifications" $cm -}}
+{{- end -}}
+{{- $k = $k | setValueAtPath "profiles" $profiles -}}
+{{- $k | toPrettyJson "  " -}}

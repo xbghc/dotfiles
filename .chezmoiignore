@@ -5,6 +5,9 @@ README.md
 .tmux.conf
 .config/ghostty
 {{ end }}
+{{ if ne .chezmoi.os "darwin" }}
+.config/karabiner
+{{ end }}
 {{ if and (hasKey . "syncClaude") (not .syncClaude) }}
 .claude
 .claude/**
