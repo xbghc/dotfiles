@@ -4,6 +4,7 @@
 return {
   {
     "uga-rosa/ccc.nvim",
+    vscode = true,
     cmd = { "CccConvert", "CccPick", "CccHighlighterToggle" },
     keys = {
       { "<leader>ch", "<cmd>CccConvert<cr>", desc = "Convert Color (rgb ↔ hex)" },

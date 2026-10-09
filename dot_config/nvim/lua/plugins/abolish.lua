@@ -7,6 +7,7 @@
 --   :Abolish                 insert-mode abbreviations / typo correction
 return {
   "tpope/vim-abolish",
+  vscode = true,
   cmd = { "S", "Subvert", "Abolish" },
   keys = {
     { "cr", desc = "Coerce Case (abolish)" },

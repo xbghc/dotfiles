@@ -10,6 +10,12 @@
 -- JS/TS: <leader>cv builds console.log(`expr: ${expr}`); and copies it to the clipboard
 -- Normal mode: treesitter member expression under the cursor (up to the segment under the cursor); visual mode: the selection
 local function cursor_expression()
+  -- Nothing keeps the tree parsed when no highlighter is attached (e.g. in VSCode)
+  local has_parser, parser = pcall(vim.treesitter.get_parser, 0, nil, { error = false })
+  if has_parser and parser then
+    local row = vim.api.nvim_win_get_cursor(0)[1] - 1
+    parser:parse({ row, row + 1 })
+  end
   local ok, node = pcall(vim.treesitter.get_node)
   if not ok or not node then
     return vim.fn.expand("<cword>")

@@ -4,9 +4,24 @@
 
 -- Copy the current file path (always using / as separator)
 -- Normal mode: <leader>fl copies path:line; visual mode: path:start-end
+local function buf_path(absolute)
+  if vim.g.vscode then
+    -- Buffer names of non-local files are URIs (vscode-remote://...), so ask VSCode for the path
+    return require("vscode").eval(
+      [[
+        const doc = vscode.window.activeTextEditor?.document;
+        if (!doc || doc.isUntitled) return "";
+        return args.absolute ? doc.uri.fsPath : vscode.workspace.asRelativePath(doc.uri, false);
+      ]],
+      { args = { absolute = absolute } }
+    )
+  end
+  return vim.fn.expand(absolute and "%:p" or "%:.")
+end
+
 local function copy_path(absolute, with_line)
   return function()
-    local path = vim.fn.expand(absolute and "%:p" or "%:.")
+    local path = buf_path(absolute)
     if path == "" then
       return vim.notify("Current buffer has no file path", vim.log.levels.WARN)
     end
@@ -30,3 +45,7 @@ vim.keymap.set("n", "<leader>fy", copy_path(false, false), { desc = "Copy Relati
 vim.keymap.set("n", "<leader>fY", copy_path(true, false), { desc = "Copy Absolute Path" })
 vim.keymap.set({ "n", "x" }, "<leader>fl", copy_path(false, true), { desc = "Copy Relative Path:Line" })
 vim.keymap.set({ "n", "x" }, "<leader>fL", copy_path(true, true), { desc = "Copy Absolute Path:Line" })
+
+if vim.g.vscode then
+  require("config.vscode")
+end
