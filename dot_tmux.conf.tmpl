@@ -11,6 +11,9 @@ set -g default-terminal "tmux-256color"
 # 24-bit color for any outer terminal (tmux >= 3.2)
 set -ga terminal-features ",*:RGB"
 setw -g mode-keys vi
+# Own the outer terminal's title; otherwise it stays stuck on the "tmux attach" command line
+set -g set-titles on
+set -g set-titles-string "#S · #W"
 
 # Splits keep the current path
 bind | split-window -h -c "#{pane_current_path}"
