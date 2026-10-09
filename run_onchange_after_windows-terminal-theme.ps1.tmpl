@@ -20,8 +20,8 @@ $s = Get-Content $path -Raw | ConvertFrom-Json
 $s.schemes = @($s.schemes | Where-Object { $_.name -ne $scheme.name }) + $scheme
 $s.profiles.defaults | Add-Member -NotePropertyName colorScheme -NotePropertyValue $scheme.name -Force
 
-# Font size from the primary monitor: aim for capital letters subtending ~20 arcmin
-# (ANSI/HFES 100 preferred 20-22') at a viewing distance guessed from screen size.
+# Font size from the primary monitor: aim for capital letters subtending ~16 arcmin
+# (the ANSI/HFES 100 minimum; its preferred 20-22' felt too big) at a viewing distance guessed from screen size.
 function Get-FontSize {
   Add-Type -Namespace ChezmoiDpi -Name U -MemberDefinition @'
 [DllImport("user32.dll")] public static extern bool SetProcessDPIAware();
@@ -44,10 +44,10 @@ function Get-FontSize {
   $ppmm = $pxW / $widthMm
   $diagIn = [math]::Sqrt([math]::Pow($mon.MaxHorizontalImageSize, 2) + [math]::Pow($mon.MaxVerticalImageSize, 2)) / 2.54
   $distMm = if ($diagIn -lt 16) { 500 } else { 650 }            # laptop vs desktop monitor
-  $capMm = $distMm * [math]::Tan(20 / 60 * [math]::PI / 180)    # 20 arcmin
+  $capMm = $distMm * [math]::Tan(16 / 60 * [math]::PI / 180)    # 16 arcmin
   $capEm = 0.73                                                  # JetBrains Mono cap height
   $pt = $capMm * $ppmm / $capEm / ($scale * 96 / 72)
-  [math]::Min(20, [math]::Max(10, [math]::Round($pt * 2) / 2))
+  [math]::Min(20.0, [math]::Max(10.0, [math]::Round($pt * 2) / 2))  # double literals: with ints the half step is rounded away
 }
 {{- if hasKey . "terminalFontSize" }}
 $size = {{ .terminalFontSize }}
