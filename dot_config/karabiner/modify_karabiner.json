@@ -1,41 +1,24 @@
 {{- /* chezmoi:modify-template */ -}}
 {{- /*
-  Only the rules below are set, in every profile (matched by description, so renaming one leaves the old copy behind);
-  devices, other rules and everything else Karabiner-Elements writes are left as-is on each machine.
+  Windows-style shortcuts on macOS (Ctrl+C/V/X/Z/..., Home/End, Ctrl+arrows, Alt+Tab, ...) so both OSes share one muscle memory.
+  The rules are the vendored rux616/karabiner-windows-mode ruleset (.vendor/karabiner-windows-mode, see README) minus $skip;
+  terminals, IDEs (VSCode included), VMs and remote desktops are excepted upstream, so Ctrl keys reach tmux/nvim untouched.
+  They are merged into every profile under the "[chezmoi] " description prefix; devices, other rules and everything else
+  Karabiner-Elements writes are left as-is on each machine.
 */ -}}
-{{- $managed := get (`{"rules": [
-  {
-    "description": "Ctrl+C copies in GUI apps (terminals and VSCode keep it as interrupt)",
-    "manipulators": [
-      {
-        "type": "basic",
-        "from": {
-          "key_code": "c",
-          "modifiers": { "mandatory": ["control"], "optional": ["caps_lock"] }
-        },
-        "to": [{ "key_code": "c", "modifiers": ["left_command"] }],
-        "conditions": [
-          {
-            "type": "frontmost_application_unless",
-            "bundle_identifiers": [
-              "^com\\.apple\\.Terminal$",
-              "^com\\.googlecode\\.iterm2$",
-              "^com\\.mitchellh\\.ghostty$",
-              "^net\\.kovidgoyal\\.kitty$",
-              "^(org|io)\\.alacritty$",
-              "^com\\.github\\.wez\\.wezterm$",
-              "^dev\\.warp\\.Warp-Stable$",
-              "^com\\.microsoft\\.VSCode(Insiders)?$"
-            ]
-          }
-        ]
-      }
-    ]
-  }
-]}` | fromJson) "rules" -}}
-{{- $names := list -}}
-{{- range $managed -}}
-{{-   $names = append $names (get . "description") -}}
+{{- $prefix := "[chezmoi] " -}}
+{{- /* The single rule shipped before the ruleset was adopted */ -}}
+{{- $legacy := "Ctrl+C copies in GUI apps (terminals and VSCode keep it as interrupt)" -}}
+{{- /*
+  Skipped: Insert variants superseded by their "[+Terminal Emulators]" twins, Ctrl+Space (stays the input source switch),
+  Cmd+1..9 (runs shell commands and shadows browser tab switching), Win alone -> Spotlight, Win+L / Alt+Ctrl+L lock and sleep.
+*/ -}}
+{{- $skip := `^(Insert \((Ctrl|Shift)\)$|Space \(Ctrl\)$|[1-9] \(Cmd\)|Win |L \((Win|Alt\+Ctrl)\))` -}}
+{{- $managed := list -}}
+{{- range (include ".vendor/karabiner-windows-mode/windows_shortcuts.json" | fromJson).rules -}}
+{{-   if not (regexMatch $skip .description) -}}
+{{-     $managed = append $managed (set . "description" (print $prefix .description)) -}}
+{{-   end -}}
 {{- end -}}
 {{- $k := dict -}}
 {{- if .chezmoi.stdin | trim -}}
@@ -46,7 +29,8 @@
 {{-   $cm := get $p "complex_modifications" | default (dict) -}}
 {{-   $rules := $managed -}}
 {{-   range (get $cm "rules" | default (list)) -}}
-{{-     if not (has (get . "description") $names) -}}
+{{-     $d := get . "description" | toString -}}
+{{-     if not (or (hasPrefix $prefix $d) (eq $d $legacy)) -}}
 {{-       $rules = append $rules . -}}
 {{-     end -}}
 {{-   end -}}
