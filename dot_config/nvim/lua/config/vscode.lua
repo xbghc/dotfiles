@@ -133,6 +133,7 @@ map("n", "<leader>ss", action("workbench.action.gotoSymbol"), { desc = "Symbols"
 map("n", "<leader>sS", action("workbench.action.showAllSymbols"), { desc = "Workspace Symbols" })
 map("n", "<leader>sd", action("workbench.actions.view.problems"), { desc = "Diagnostics" })
 map("n", "<leader>sD", action("workbench.actions.view.problems"), { desc = "Diagnostics" })
+map("n", "<leader>sm", action("nvimMarks.list"), { desc = "Marks" }) -- xbghc.nvim-marks, see plugins/vscode.lua
 map("n", "<leader>sk", action("workbench.action.openGlobalKeybindings"), { desc = "Keymaps" })
 map("n", "<leader>sC", action("workbench.action.showCommands"), { desc = "Commands" })
 map("n", "<leader>sc", action("workbench.action.showCommands"), { desc = "Command History" })

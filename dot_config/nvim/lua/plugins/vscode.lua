@@ -14,4 +14,11 @@ return {
       return {}
     end,
   },
+  {
+    -- vscode-neovim forces signcolumn=no; this pushes the marks to the xbghc.nvim-marks VSCode extension
+    -- (installed from .chezmoidata/vscode.toml), which draws them in the gutter. Marks themselves stay native.
+    "xbghc/vscode-nvim-marks",
+    vscode = true,
+    opts = {},
+  },
 }

@@ -11,6 +11,8 @@ On Windows a junction `%LOCALAPPDATA%\nvim` → `~/.config/nvim` is created auto
 ## VSCode
 The nvim config doubles as the config for the [vscode-neovim](https://github.com/vscode-neovim/vscode-neovim) extension: under VSCode only the editing plugins load, and the LazyVim keys are mapped to VSCode commands (`lua/config/vscode.lua`, `lua/plugins/vscode.lua`). After changing it, run `Neovim: Restart Extension`.
 
+The extensions listed in `.chezmoidata/vscode.toml` are installed on `chezmoi apply` when the `code` CLI is available (missing ones only; nothing is uninstalled, so each machine can have more). Among them [nvim-marks](https://github.com/xbghc/vscode-nvim-marks), which shows the nvim marks in the gutter; `<leader>sm` lists them.
+
 ## Karabiner-Elements (macOS)
 Windows-style shortcuts on macOS, so both OSes share one muscle memory: Ctrl+C/V/X/Z/A/S/F/T/W/…, Home/End, Ctrl+arrows, Ctrl+Backspace, Alt+Tab, Alt+F4, Ctrl+Shift+C/V in terminals. Terminals, IDEs (VSCode included), VMs and remote desktops are excepted, so Ctrl keys still reach tmux/nvim there.
 

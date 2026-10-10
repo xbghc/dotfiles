@@ -1,0 +1,20 @@
+{{ if ne .chezmoi.os "windows" -}}
+#!/bin/sh
+# Install the VSCode extensions listed in .chezmoidata/vscode.toml whenever the list changes
+# If VSCode is installed later: chezmoi state delete-bucket --bucket=scriptState && chezmoi apply
+code=$(command -v code) || code="/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code"
+if [ ! -x "$code" ]; then
+  echo "VSCode CLI (code) not found; skipping extensions" >&2
+  exit 0
+fi
+
+installed=$("$code" --list-extensions)
+status=0
+for ext in {{ .vscode.extensions | join " " }}; do
+  # extension ids are case-insensitive
+  printf '%s\n' "$installed" | grep -qixF "$ext" && continue
+  "$code" --install-extension "$ext" || status=1
+done
+# a failure makes chezmoi run the script again on the next apply
+exit $status
+{{ end -}}

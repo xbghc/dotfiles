@@ -1,0 +1,8 @@
+# VSCode extensions every machine gets, installed by run_onchange_after_vscode-extensions.*
+# Only missing ones are installed; nothing is ever uninstalled, so machines can have more.
+[vscode]
+    extensions = [
+        "asvetliakov.vscode-neovim",
+        # gutter icons for nvim marks; the nvim half is in dot_config/nvim/lua/plugins/vscode.lua
+        "xbghc.nvim-marks",
+    ]
