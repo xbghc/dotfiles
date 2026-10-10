@@ -1,8 +1,29 @@
 # VSCode extensions every machine gets, installed by run_onchange_after_vscode-extensions.*
 # Only missing ones are installed; nothing is ever uninstalled, so machines can have more.
+# Keep language/toolchain-specific extensions (Python, Vue, Go, Flutter, Docker, ...) out: install those per machine.
 [vscode]
     extensions = [
+        # nvim: the editor itself, and gutter icons for its marks (nvim half: dot_config/nvim/lua/plugins/vscode.lua)
         "asvetliakov.vscode-neovim",
-        # gutter icons for nvim marks; the nvim half is in dot_config/nvim/lua/plugins/vscode.lua
         "xbghc.nvim-marks",
+
+        # same formatting/linting as the nvim config (LazyVim prettier + eslint extras)
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint",
+        "editorconfig.editorconfig",
+
+        # git / GitHub
+        "mhutchie.git-graph",
+        "github.vscode-pull-request-github",
+        "github.vscode-github-actions",
+
+        # workflow
+        "anthropic.claude-code",
+        "alefragnani.project-manager",
+        "ms-vscode-remote.remote-ssh", # brings remote-ssh-edit and remote-explorer along
+        "vscode-icons-team.vscode-icons",
+
+        # file types edited everywhere: chezmoi's TOML, markdown
+        "tamasfe.even-better-toml",
+        "shd101wyy.markdown-preview-enhanced",
     ]
