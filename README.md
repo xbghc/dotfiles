@@ -24,3 +24,24 @@ curl -fsSL -o .vendor/karabiner-windows-mode/windows_shortcuts.json https://raw.
 ## Daily use
 - After editing: `chezmoi re-add` (nvim's lazy-lock.json is not synced; each machine keeps its own) → `chezmoi cd` → git commit/push
 - Pull updates: `chezmoi update`
+
+## Codex CLI
+
+`dot_codex/modify_config.toml` merges shared preferences into `~/.codex/config.toml`:
+
+- Model: `gpt-6-astra`, reasoning effort: `xhigh`.
+- Workspace-write sandbox with automatic approval review; live web search.
+- Catppuccin Latte theme; model + reasoning, remaining context, and weekly limit in the status line.
+- Terminal notifications disabled. Resume directory and onboarding tooltips use Codex defaults.
+
+Project trust, integrations, and generated UI state remain local to each machine. Credentials,
+session history, and other files under `~/.codex` are not managed.
+
+Edit the modify template to change shared preferences, then apply only this file:
+
+```sh
+chezmoi apply ~/.codex/config.toml
+```
+
+As with the Claude Code modify template, `chezmoi re-add` does not capture shared preference
+changes made in the app; update the template instead.

@@ -1,0 +1,22 @@
+{{- /* chezmoi:modify-template */ -}}
+{{- /*
+  Sync shared Codex preferences while retaining per-machine project trust,
+  integrations, and UI state. Only ~/.codex/config.toml is managed.
+*/ -}}
+{{- $c := dict -}}
+{{- if .chezmoi.stdin | trim -}}
+{{-   $c = .chezmoi.stdin | fromToml -}}
+{{- end -}}
+{{- $c = $c | setValueAtPath "model" "gpt-6-astra" -}}
+{{- $c = $c | setValueAtPath "model_reasoning_effort" "xhigh" -}}
+{{- $c = $c | setValueAtPath "approval_policy" "on-request" -}}
+{{- $c = $c | setValueAtPath "approvals_reviewer" "auto_review" -}}
+{{- $c = $c | setValueAtPath "sandbox_mode" "workspace-write" -}}
+{{- $c = $c | setValueAtPath "web_search" "live" -}}
+{{- $c = $c | setValueAtPath "tui.notifications" false -}}
+{{- $c = $c | setValueAtPath "tui.status_line" (list "model-with-reasoning" "context-remaining" "weekly-limit") -}}
+{{- $c = $c | setValueAtPath "tui.theme" "catppuccin-latte" -}}
+{{- /* Keep directory selection and onboarding tooltips at Codex defaults. */ -}}
+{{- $c = $c | deleteValueAtPath "tui.resume_cwd" -}}
+{{- $c = $c | deleteValueAtPath "tui.show_tooltips" -}}
+{{- $c | toToml -}}
