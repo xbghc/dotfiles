@@ -21,6 +21,11 @@ Windows-style shortcuts on macOS, so both OSes share one muscle memory: Ctrl+C/V
 curl -fsSL -o .vendor/karabiner-windows-mode/windows_shortcuts.json https://raw.githubusercontent.com/rux616/karabiner-windows-mode/main/json/windows_shortcuts.json
 ```
 
+## Ghostty + zsh (macOS)
+On every `chezmoi apply`, `modify_dot_zshrc` preserves the machine's existing `~/.zshrc` and appends Ghostty's shell integration if no uncommented `source` or `.` command already loads it. A missing `~/.zshrc` is created. The integration reports the working directory from zsh inside tmux; it only loads when `GHOSTTY_RESOURCES_DIR` is set and the integration file is readable.
+
+Preview with `chezmoi diff ~/.zshrc`, then apply with `chezmoi apply ~/.zshrc`. Open a new zsh pane or run `source ~/.zshrc`; after the next prompt, check `tmux display-message -p '#{pane_path}'`. Other contents stay local to each machine, and `.zshrc` is ignored on other operating systems.
+
 ## Daily use
 - After editing: `chezmoi re-add` (nvim's lazy-lock.json is not synced; each machine keeps its own) → `chezmoi cd` → git commit/push
 - Pull updates: `chezmoi update`

@@ -1,0 +1,20 @@
+{{- /* chezmoi:modify-template */ -}}
+{{- /* Keep each machine's zshrc; only append missing Ghostty shell integration. */ -}}
+{{- $contents := .chezmoi.stdin -}}
+{{- /* Accept source and dot commands, including Ghostty's quoted-path variants.
+      A commented-out command or a mere mention of the path does not count. */ -}}
+{{- $sourcePattern := `(?m)^[\t ]*(source|\.)[\t ]+[^#\r\n]*/shell-integration/zsh/ghostty-integration(["';\t \r]|$)` -}}
+{{- if not (regexMatch $sourcePattern $contents) -}}
+{{-   if ne $contents "" -}}
+{{-     if not (hasSuffix "\n" $contents) -}}
+{{-       $contents = print $contents "\n" -}}
+{{-     end -}}
+{{-     $contents = print $contents "\n" -}}
+{{-   end -}}
+{{-   $contents = print $contents `# Ghostty shell integration (also reports the working directory inside tmux).
+if [[ -n "${GHOSTTY_RESOURCES_DIR:-}" && -r "$GHOSTTY_RESOURCES_DIR/shell-integration/zsh/ghostty-integration" ]]; then
+  source "$GHOSTTY_RESOURCES_DIR/shell-integration/zsh/ghostty-integration"
+fi
+` -}}
+{{- end -}}
+{{- $contents -}}
