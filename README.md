@@ -26,6 +26,8 @@ On every `chezmoi apply`, `modify_dot_zshrc` preserves the machine's existing `~
 
 Preview with `chezmoi diff ~/.zshrc`, then apply with `chezmoi apply ~/.zshrc`. Open a new zsh pane or run `source ~/.zshrc`; after the next prompt, check `tmux display-message -p '#{pane_path}'`. Other contents stay local to each machine, and `.zshrc` is ignored on other operating systems.
 
+The tmux config declares `osc7` support for `xterm-ghostty` and enables `set-titles`, so tmux 3.3+ forwards the active pane's reported directory to Ghostty. After syncing this setting, run `tmux source-file ~/.tmux.conf`, detach, and reattach the session so terminal capabilities are refreshed. `tmux display-message -p '#{client_termfeatures}'` should then include `osc7`. Relative file links also require Ghostty 1.3+; click paths in the active pane, where the reported directory applies.
+
 ## Daily use
 - After editing: `chezmoi re-add` (nvim's lazy-lock.json is not synced; each machine keeps its own) → `chezmoi cd` → git commit/push
 - Pull updates: `chezmoi update`

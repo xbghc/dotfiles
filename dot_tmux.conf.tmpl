@@ -10,6 +10,8 @@ set -g renumber-windows on
 set -g default-terminal "tmux-256color"
 # 24-bit color for any outer terminal (tmux >= 3.2)
 set -ga terminal-features ",*:RGB"
+# Forward the active pane's reported working directory to Ghostty (tmux >= 3.3).
+set -as terminal-features ",xterm-ghostty:osc7"
 setw -g mode-keys vi
 # Own the outer terminal's title; otherwise it stays stuck on the "tmux attach" command line
 set -g set-titles on
