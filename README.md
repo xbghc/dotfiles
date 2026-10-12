@@ -8,6 +8,8 @@ chezmoi init --apply xbghc
 ```
 On Windows a junction `%LOCALAPPDATA%\nvim` → `~/.config/nvim` is created automatically (move the directory away first if it already exists).
 
+Claude Code (`~/.claude`) and Codex CLI (`~/.codex`) settings share one optional sync choice during initialization: both are enabled or both are skipped. The existing `[data]` key `syncClaude` controls both directories, preserving each machine's saved choice. Set `syncClaude = false` in the local chezmoi config to skip both; `true` enables both. Skipping leaves any existing local files in place.
+
 ## VSCode
 The nvim config doubles as the config for the [vscode-neovim](https://github.com/vscode-neovim/vscode-neovim) extension: under VSCode only the editing plugins load, and the LazyVim keys are mapped to VSCode commands (`lua/config/vscode.lua`, `lua/plugins/vscode.lua`). After changing it, run `Neovim: Restart Extension`.
 

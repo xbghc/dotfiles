@@ -12,4 +12,6 @@ README.md
 {{ if and (hasKey . "syncClaude") (not .syncClaude) }}
 .claude
 .claude/**
+.codex
+.codex/**
 {{ end }}
