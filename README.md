@@ -40,11 +40,19 @@ The tmux config declares `osc7` support for `xterm-ghostty` and enables `set-tit
 
 - Model: `gpt-6-astra`, reasoning effort: `xhigh`.
 - Workspace-write sandbox with automatic approval review; live web search.
-- Catppuccin Latte theme; model + reasoning, remaining context, and weekly limit in the status line.
+- Catppuccin Latte theme; a compact, colored status line showing context capacity, percentage used, and the weekly limit.
 - Terminal notifications disabled. Resume directory and onboarding tooltips use Codex defaults.
 
 Project trust, integrations, and generated UI state remain local to each machine. Credentials,
 session history, and other files under `~/.codex` are not managed.
+
+The status line uses Codex's built-in fields and colors (`tui.status_line_use_colors`,
+supported by Codex CLI 0.153.4). Its weekly-limit field shows remaining capacity;
+Claude's custom icons, separators, usage colors, and reset countdowns cannot be configured
+through Codex's status-line item list.
+`context-window-size` adds the total context capacity next to `context-used`'s percentage.
+Codex CLI 0.153.4 has no built-in current-context token-count item for Claude's
+`used / capacity` display; `used-tokens` is cumulative session consumption and is deliberately omitted.
 
 Edit the modify template to change shared preferences, then apply only this file:
 
