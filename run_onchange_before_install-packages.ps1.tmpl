@@ -1,0 +1,34 @@
+{{ if eq .chezmoi.os "windows" -}}
+# Install missing tools from .chezmoidata/packages.toml using WinGet.
+$ErrorActionPreference = "Stop"
+$PSNativeCommandUseErrorActionPreference = $false
+
+$packages = @(
+{{- range .packages.windows }}
+  @{ Id = '{{ .id | replace "'" "''" }}'; Command = '{{ get . "command" | replace "'" "''" }}' }
+{{- end }}
+)
+$failed = $false
+foreach ($package in $packages) {
+  if ($package.Command -and (Get-Command $package.Command -CommandType Application -ErrorAction SilentlyContinue)) {
+    Write-Host "$($package.Command) is already available; skipping"
+    continue
+  }
+  if (-not (Get-Command winget -CommandType Application -ErrorAction SilentlyContinue)) {
+    throw "WinGet is required to install $($package.Id). Install App Installer, then run chezmoi apply again."
+  }
+
+  # Also detect registered installations whose executables are not on PATH.
+  winget list --id $package.Id --exact --source winget --accept-source-agreements --disable-interactivity | Out-Null
+  if ($LASTEXITCODE -eq 0) { continue }
+
+  Write-Host "Installing $($package.Id)..."
+  winget install --id $package.Id --exact --source winget --silent --no-upgrade --accept-source-agreements --accept-package-agreements --disable-interactivity
+  if ($LASTEXITCODE -ne 0) {
+    Write-Warning "Failed to install $($package.Id) (exit code $LASTEXITCODE). Run chezmoi apply to retry."
+    $failed = $true
+  }
+}
+# Failed scripts are retried by chezmoi on the next apply.
+if ($failed) { exit 1 }
+{{ end -}}

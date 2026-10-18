@@ -10,6 +10,35 @@ On Windows a junction `%LOCALAPPDATA%\nvim` → `~/.config/nvim` is created auto
 
 Claude Code (`~/.claude`) and Codex CLI (`~/.codex`) settings share one optional sync choice during initialization: both are enabled or both are skipped. The existing `[data]` key `syncClaude` controls both directories, preserving each machine's saved choice. Set `syncClaude = false` in the local chezmoi config to skip both; `true` enables both. Skipping leaves any existing local files in place.
 
+## Packages
+
+`.chezmoidata/packages.toml` lists tools to download and install automatically:
+Windows uses WinGet package IDs; macOS uses Homebrew formula names. Both lists
+initially contain `ffmpeg`. Install WinGet (App Installer) or Homebrew first if
+the machine needs packages.
+
+Following [chezmoi's package installation pattern](https://www.chezmoi.io/user-guide/advanced/install-packages-declaratively/),
+the scripts run before other changes on the first `chezmoi apply` and whenever
+the platform's package list or installer script changes. They skip packages
+already installed, including tools found on `PATH` via the optional `command`
+field. Existing packages are not explicitly upgraded or removed; installing a
+missing Homebrew formula can update its dependencies. A failed install is
+retried on the next apply. Linux package installation is not configured.
+
+To add a tool, add its entry to the appropriate list, for example:
+
+```toml
+# Inside packages.windows:
+{ id = "BurntSushi.ripgrep.MSVC", command = "rg" },
+# Inside packages.darwin:
+{ id = "ripgrep", command = "rg" },
+```
+
+Then run `chezmoi apply`. On a new machine, `chezmoi init --apply xbghc` also
+installs these packages. Windows installs run silently and accept package/source
+agreements; an installer may still require administrator approval. Open a new
+terminal after installing tools so it picks up any `PATH` changes.
+
 ## VSCode
 The nvim config doubles as the config for the [vscode-neovim](https://github.com/vscode-neovim/vscode-neovim) extension: under VSCode only the editing plugins load, and the LazyVim keys are mapped to VSCode commands (`lua/config/vscode.lua`, `lua/plugins/vscode.lua`). After changing it, run `Neovim: Restart Extension`.
 

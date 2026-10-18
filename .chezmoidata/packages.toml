@@ -1,0 +1,9 @@
+# Installed on the first chezmoi apply and whenever the platform's list changes.
+# command is optional: an executable already on PATH also satisfies the package.
+[packages]
+    windows = [
+        { id = "Gyan.FFmpeg", command = "ffmpeg" },
+    ]
+    darwin = [
+        { id = "ffmpeg", command = "ffmpeg" },
+    ]

@@ -1,0 +1,39 @@
+{{ if eq .chezmoi.os "darwin" -}}
+#!/bin/sh
+# Install missing tools from .chezmoidata/packages.toml using Homebrew.
+set -eu
+
+install_package() {
+  package=$1
+  executable=$2
+  if [ -n "$executable" ] && command -v "$executable" >/dev/null 2>&1; then
+    echo "$executable is already available; skipping"
+    return
+  fi
+
+  brew=$(command -v brew) || brew=""
+  if [ -z "$brew" ]; then
+    for candidate in /opt/homebrew/bin/brew /usr/local/bin/brew; do
+      if [ -x "$candidate" ]; then
+        brew=$candidate
+        break
+      fi
+    done
+  fi
+  if [ -z "$brew" ]; then
+    echo "Homebrew is required to install $package. Install it from https://brew.sh, then run chezmoi apply again." >&2
+    exit 1
+  fi
+
+  if "$brew" list --formula "$package" >/dev/null 2>&1; then
+    return
+  fi
+  echo "Installing $package..."
+  # set -e propagates installation errors so chezmoi retries on the next apply.
+  "$brew" install --formula "$package"
+}
+
+{{ range .packages.darwin -}}
+install_package '{{ .id | replace "'" "'\\''" }}' '{{ get . "command" | replace "'" "'\\''" }}'
+{{ end -}}
+{{ end -}}
