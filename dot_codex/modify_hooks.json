@@ -1,0 +1,31 @@
+{{- /* chezmoi:modify-template */ -}}
+{{- /* User-hook registration for Idle Compact: plugin hooks are not exposed by
+  the tested Codex 0.163.0 runtimes. Preserve all unrelated hook handlers. */ -}}
+{{- $c := dict -}}
+{{- if .chezmoi.stdin | trim -}}
+{{-   $c = .chezmoi.stdin | fromJson -}}
+{{- end -}}
+{{- $hooks := get $c "hooks" | default dict -}}
+{{- $python := "python3" -}}
+{{- if eq .chezmoi.os "windows" -}}{{- $python = "python" -}}{{- end -}}
+{{- $script := joinPath .chezmoi.homeDir ".codex" "local-marketplace" "plugins" "idle-compact" "scripts" "idle_compact.py" -}}
+{{- $command := printf "%s \"%s\" hook" $python $script -}}
+{{- range $event := list "UserPromptSubmit" "Stop" "Interrupt" "SessionStart" "SessionEnd" "PreCompact" "PostCompact" -}}
+{{-   $groups := list -}}
+{{-   range $group := get $hooks $event | default list -}}
+{{-     $handlers := list -}}
+{{-     range $handler := get $group "hooks" | default list -}}
+{{-       if ne (get $handler "statusMessage") "Idle Compact (chezmoi)" -}}
+{{-         $handlers = append $handlers $handler -}}
+{{-       end -}}
+{{-     end -}}
+{{-     if $handlers -}}
+{{-       $groups = append $groups (set $group "hooks" $handlers) -}}
+{{-     end -}}
+{{-   end -}}
+{{-   $handler := dict "type" "command" "command" $command "timeout" 3 "statusMessage" "Idle Compact (chezmoi)" -}}
+{{-   $groups = append $groups (dict "hooks" (list $handler)) -}}
+{{-   $_ := set $hooks $event $groups -}}
+{{- end -}}
+{{- $_ := set $c "hooks" $hooks -}}
+{{ $c | toPrettyJson }}

@@ -1,7 +1,7 @@
 {{- /* chezmoi:modify-template */ -}}
 {{- /*
   Sync shared Codex preferences while retaining per-machine project trust,
-  integrations, and UI state. Only ~/.codex/config.toml is managed.
+  integrations, and UI state. The personal plugin marketplace is managed separately.
 */ -}}
 {{- $c := dict -}}
 {{- if .chezmoi.stdin | trim -}}
@@ -9,10 +9,24 @@
 {{- end -}}
 {{- $c = $c | setValueAtPath "model" "gpt-6-astra" -}}
 {{- $c = $c | setValueAtPath "model_reasoning_effort" "xhigh" -}}
+{{- /* Use a 500K context window; keep the model's default auto-compaction threshold.
+  https://learn.chatgpt.com/docs/config-file/config-sample
+*/ -}}
+{{- $c = $c | setValueAtPath "model_context_window" 500000 -}}
+{{- $c = $c | deleteValueAtPath "model_auto_compact_token_limit" -}}
+{{- /*
+  Default to automatic approval review:
+  - on-request lets Codex request approval when needed.
+  - auto_review routes eligible requests to the automatic reviewer.
+  - workspace-write keeps file writes scoped to the workspace and temp directories.
+*/ -}}
 {{- $c = $c | setValueAtPath "approval_policy" "on-request" -}}
 {{- $c = $c | setValueAtPath "approvals_reviewer" "auto_review" -}}
 {{- $c = $c | setValueAtPath "sandbox_mode" "workspace-write" -}}
 {{- $c = $c | setValueAtPath "web_search" "live" -}}
+{{- /* Personal idle-compaction plugin; its hooks still require Codex trust review. */ -}}
+{{- $c = $c | setValueAtPath "marketplaces.chezmoi-local" (dict "source_type" "local" "source" (joinPath .chezmoi.homeDir ".codex" "local-marketplace")) -}}
+{{- $c = $c | setValueAtPath "plugins.idle-compact@chezmoi-local.enabled" true -}}
 {{- $c = $c | setValueAtPath "tui.notifications" false -}}
 {{- /* Show context capacity and utilization; used-tokens is cumulative session usage. */ -}}
 {{- $c = $c | setValueAtPath "tui.status_line" (list "context-window-size" "context-used" "weekly-limit") -}}

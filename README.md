@@ -39,12 +39,16 @@ The tmux config declares `osc7` support for `xterm-ghostty` and enables `set-tit
 `dot_codex/modify_config.toml` merges shared preferences into `~/.codex/config.toml`:
 
 - Model: `gpt-6-astra`, reasoning effort: `xhigh`.
+- Context window: `500000` tokens. Auto-compaction uses the model default; applying removes manual overrides for `model_auto_compact_token_limit` ([reference](https://learn.chatgpt.com/docs/config-file/config-sample)).
 - Workspace-write sandbox with automatic approval review; live web search.
 - Catppuccin Latte theme; a compact, colored status line showing context capacity, percentage used, and the weekly limit.
 - Terminal notifications disabled. Resume directory and onboarding tooltips use Codex defaults.
+- Personal `idle-compact` plugin: compact once after 25 minutes of inactivity, using the documented 30-minute cache TTL as a timing reference.
 
-Project trust, integrations, and generated UI state remain local to each machine. Credentials,
-session history, and other files under `~/.codex` are not managed.
+The local plugin marketplace is managed in `dot_codex/local-marketplace`; see its
+[installation and hook trust instructions](dot_codex/local-marketplace/plugins/idle-compact/README.md).
+Project trust, other integrations, and generated UI state remain local to each machine.
+Credentials, session history, and plugin runtime state are not managed.
 
 The status line uses Codex's built-in fields and colors (`tui.status_line_use_colors`,
 supported by Codex CLI 0.153.4). Its weekly-limit field shows remaining capacity;
