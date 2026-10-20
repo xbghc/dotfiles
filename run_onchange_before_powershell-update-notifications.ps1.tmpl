@@ -1,0 +1,7 @@
+{{ if eq .chezmoi.os "windows" -}}
+$ErrorActionPreference = "Stop"
+
+# Avoid the zh-Hans update banner crash (PowerShell/PowerShell#28131).
+# This must be set before pwsh starts, so a PowerShell profile is too late.
+[Environment]::SetEnvironmentVariable("POWERSHELL_UPDATECHECK", "Off", "User")
+{{ end -}}
