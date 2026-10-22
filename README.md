@@ -44,14 +44,6 @@ The nvim config doubles as the config for the [vscode-neovim](https://github.com
 
 The extensions listed in `.chezmoidata/vscode.toml` are installed on `chezmoi apply` when the `code` CLI is available (missing ones only; nothing is uninstalled, so each machine can have more). Among them [nvim-marks](https://github.com/xbghc/vscode-nvim-marks), which shows the nvim marks in the gutter; `<leader>sm` lists them.
 
-## Karabiner-Elements (macOS)
-Windows-style shortcuts on macOS, so both OSes share one muscle memory: Ctrl+C/V/X/Z/A/S/F/T/W/…, Home/End, Ctrl+arrows, Ctrl+Backspace, Alt+Tab, Alt+F4, Ctrl+Shift+C/V in terminals. Terminals, IDEs (VSCode included), VMs and remote desktops are excepted, so Ctrl keys still reach tmux/nvim there.
-
-`~/.config/karabiner/karabiner.json` stays owned by Karabiner-Elements; chezmoi only merges the rules into every profile, prefixed `[chezmoi]` (`dot_config/karabiner/modify_karabiner.json`, which also lists the skipped rules). The rules are vendored from [rux616/karabiner-windows-mode](https://github.com/rux616/karabiner-windows-mode) at `c5cdcb9`; to update:
-```sh
-curl -fsSL -o .vendor/karabiner-windows-mode/windows_shortcuts.json https://raw.githubusercontent.com/rux616/karabiner-windows-mode/main/json/windows_shortcuts.json
-```
-
 ## Ghostty + zsh (macOS)
 On every `chezmoi apply`, `modify_dot_zshrc` preserves the machine's existing `~/.zshrc` and appends Ghostty's shell integration if no uncommented `source` or `.` command already loads it. A missing `~/.zshrc` is created. The integration reports the working directory from zsh inside tmux; it only loads when `GHOSTTY_RESOURCES_DIR` is set and the integration file is readable.
 
@@ -72,10 +64,7 @@ The tmux config declares `osc7` support for `xterm-ghostty` and enables `set-tit
 - Workspace-write sandbox with automatic approval review; live web search.
 - Catppuccin Latte theme; a compact, colored status line showing context capacity, percentage used, and the weekly limit.
 - Terminal notifications disabled. Resume directory and onboarding tooltips use Codex defaults.
-- Personal `idle-compact` plugin: compact once after 25 minutes of inactivity, using the documented 30-minute cache TTL as a timing reference.
 
-The local plugin marketplace is managed in `dot_codex/local-marketplace`; see its
-[installation and hook trust instructions](dot_codex/local-marketplace/plugins/idle-compact/README.md).
 Project trust, other integrations, and generated UI state remain local to each machine.
 Credentials, session history, and plugin runtime state are not managed.
 

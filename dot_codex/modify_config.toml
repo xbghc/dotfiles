@@ -1,7 +1,7 @@
 {{- /* chezmoi:modify-template */ -}}
 {{- /*
   Sync shared Codex preferences while retaining per-machine project trust,
-  integrations, and UI state. The personal plugin marketplace is managed separately.
+  integrations, and UI state.
 */ -}}
 {{- $c := dict -}}
 {{- if .chezmoi.stdin | trim -}}
@@ -24,9 +24,6 @@
 {{- $c = $c | setValueAtPath "approvals_reviewer" "auto_review" -}}
 {{- $c = $c | setValueAtPath "sandbox_mode" "workspace-write" -}}
 {{- $c = $c | setValueAtPath "web_search" "live" -}}
-{{- /* Personal idle-compaction plugin; its hooks still require Codex trust review. */ -}}
-{{- $c = $c | setValueAtPath "marketplaces.chezmoi-local" (dict "source_type" "local" "source" (joinPath .chezmoi.homeDir ".codex" "local-marketplace")) -}}
-{{- $c = $c | setValueAtPath "plugins.idle-compact@chezmoi-local.enabled" true -}}
 {{- $c = $c | setValueAtPath "tui.notifications" false -}}
 {{- /* Show context capacity and utilization; used-tokens is cumulative session usage. */ -}}
 {{- $c = $c | setValueAtPath "tui.status_line" (list "context-window-size" "context-used" "weekly-limit") -}}

@@ -1,6 +1,0 @@
-{
-  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
-  "name": "idle-compact",
-  "version": "0.1.2",
-  "description": "Compact an idle local Codex conversation once after 25 minutes."
-}
