@@ -13,6 +13,9 @@ set -ga terminal-features ",*:RGB"
 # Forward the active pane's reported working directory to Ghostty (tmux >= 3.3).
 set -as terminal-features ",xterm-ghostty:osc7"
 setw -g mode-keys vi
+# Keep manual window names (prefix + ,); rename sessions with prefix + $.
+setw -g automatic-rename off
+setw -g allow-rename off
 # Own the outer terminal's title; otherwise it stays stuck on the "tmux attach" command line
 set -g set-titles on
 set -g set-titles-string "#S · #W"
@@ -52,6 +55,9 @@ set -g @continuum-save-interval "15"
 # ---- Catppuccin (configuration recommended by its README) ----
 set -g @catppuccin_flavor "latte"
 set -g @catppuccin_window_status_style "rounded"
+# Show manual window names instead of application-controlled pane titles.
+set -g @catppuccin_window_text " #W"
+set -g @catppuccin_window_current_text " #W"
 
 # Load catppuccin before building the status line so its @catppuccin_status_* modules exist
 # (guarded so a fresh machine without plugins yet doesn't error)
