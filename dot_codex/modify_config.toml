@@ -8,7 +8,7 @@
 {{-   $c = .chezmoi.stdin | fromToml -}}
 {{- end -}}
 {{- $c = $c | setValueAtPath "model" "gpt-6-astra" -}}
-{{- $c = $c | setValueAtPath "model_reasoning_effort" "xhigh" -}}
+{{- $c = $c | setValueAtPath "model_reasoning_effort" "max" -}}
 {{- /* Use a 500K context window; keep the model's default auto-compaction threshold.
   https://learn.chatgpt.com/docs/config-file/config-sample
 */ -}}

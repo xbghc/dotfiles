@@ -67,7 +67,7 @@ The tmux config declares `osc7` support for `xterm-ghostty` and enables `set-tit
 
 `dot_codex/modify_config.toml` merges shared preferences into `~/.codex/config.toml`:
 
-- Model: `gpt-6-astra`, reasoning effort: `xhigh`.
+- Model: `gpt-6-astra`, reasoning effort: `max`.
 - Context window: `500000` tokens. Auto-compaction uses the model default; applying removes manual overrides for `model_auto_compact_token_limit` ([reference](https://learn.chatgpt.com/docs/config-file/config-sample)).
 - Workspace-write sandbox with automatic approval review; live web search.
 - Catppuccin Latte theme; a compact, colored status line showing context capacity, percentage used, and the weekly limit.
