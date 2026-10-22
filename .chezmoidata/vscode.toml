@@ -2,7 +2,7 @@
 # Only missing ones are installed; nothing is ever uninstalled, so machines can have more.
 [vscode]
     extensions = [
-        # nvim: the editor itself, and gutter icons for its marks (nvim half: dot_config/nvim/lua/plugins/vscode.lua)
+        # nvim: the editor itself, and gutter icons for its marks (the extension configures nvim automatically)
         "asvetliakov.vscode-neovim",
         "xbghc.nvim-marks",
 
