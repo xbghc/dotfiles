@@ -120,6 +120,12 @@ map("n", "<leader>E", action("workbench.files.action.showActiveFileInExplorer"),
 map("n", "<leader>fE", action("workbench.files.action.showActiveFileInExplorer"), { desc = "Reveal File in Explorer" })
 
 -- search
+-- Keep Vim's normal-mode search keys on VSCode's shared Find state.
+-- In the Find input, Enter/Shift+Enter navigate and Esc returns to the editor.
+map("n", "/", action("actions.find"), { desc = "Find in File" })
+map("n", "*", action("editor.action.nextSelectionMatchFindAction"), { desc = "Find Next Word" })
+map("n", "n", action("editor.action.nextMatchFindAction"), { desc = "Next Match" })
+map("n", "N", action("editor.action.previousMatchFindAction"), { desc = "Prev Match" })
 for _, lhs in ipairs({ "<leader>/", "<leader>sg", "<leader>sG" }) do
   map("n", lhs, action("workbench.action.findInFiles"), { desc = "Grep" })
 end
