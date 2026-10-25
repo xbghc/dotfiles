@@ -1,0 +1,17 @@
+{{- /* Merge the managed shortcut into VSCode's JSONC array; keep other bindings in order. */ -}}
+{{- $bindings := list -}}
+{{- if .chezmoi.stdin | trim -}}
+{{-   $bindings = .chezmoi.stdin | fromJsonc -}}
+{{- end -}}
+{{- if not (kindIs "slice" $bindings) -}}
+{{-   fail "VSCode keybindings.json must contain an array" -}}
+{{- end -}}
+{{- $when := "editorFocus && findInputFocussed && neovim.init && neovim.mode != insert && editorLangId not in neovim.editorLangIdExclusions" -}}
+{{- $result := list -}}
+{{- range $bindings -}}
+{{-   if not (and (eq (get . "key") "enter") (eq (get . "when") $when)) -}}
+{{-     $result = append $result . -}}
+{{-   end -}}
+{{- end -}}
+{{- $result = append $result (dict "key" "enter" "command" "closeFindWidget" "when" $when) -}}
+{{- $result | toPrettyJson "  " -}}

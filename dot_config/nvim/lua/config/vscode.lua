@@ -129,7 +129,7 @@ map("n", "<leader>fE", action("workbench.files.action.showActiveFileInExplorer")
 
 -- search
 -- Keep search keys on VSCode's shared Find state, including the Visual selection left by Find.
--- In the Find input, Enter/Shift+Enter navigate and Esc returns to the editor.
+-- The shared VSCode keybinding makes Enter accept the current Find preview and return to the editor.
 map("n", "/", action("actions.find"), { desc = "Find in File" })
 map("n", "*", find_match("editor.action.nextSelectionMatchFindAction"), { desc = "Find Next Word" })
 map(nx, "n", find_match("editor.action.nextMatchFindAction"), { desc = "Next Match" })

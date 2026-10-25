@@ -5,8 +5,15 @@ README.md
 .tmux.conf
 .config/ghostty
 {{ end }}
+{{ if ne .chezmoi.os "windows" }}
+AppData
+{{ end }}
 {{ if ne .chezmoi.os "darwin" }}
+Library
 .zshrc
+{{ end }}
+{{ if or (eq .chezmoi.os "windows") (eq .chezmoi.os "darwin") }}
+.config/Code
 {{ end }}
 {{ if and (hasKey . "syncClaude") (not .syncClaude) }}
 .claude
