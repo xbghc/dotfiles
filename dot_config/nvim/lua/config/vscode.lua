@@ -43,6 +43,14 @@ local function action(command, args)
   end
 end
 
+-- Find selects the match, which vscode-neovim syncs to Visual mode. Keep that selection for
+-- subsequent navigation instead of using action()'s visual-mode cleanup or restoring the old range.
+local function find_match(command)
+  return function()
+    vscode.action(command, { restore_selection = false })
+  end
+end
+
 -- Flip a VSCode setting between two values (written to the user settings)
 local function toggle(name, on, off)
   return function()
@@ -120,12 +128,12 @@ map("n", "<leader>E", action("workbench.files.action.showActiveFileInExplorer"),
 map("n", "<leader>fE", action("workbench.files.action.showActiveFileInExplorer"), { desc = "Reveal File in Explorer" })
 
 -- search
--- Keep Vim's normal-mode search keys on VSCode's shared Find state.
+-- Keep search keys on VSCode's shared Find state, including the Visual selection left by Find.
 -- In the Find input, Enter/Shift+Enter navigate and Esc returns to the editor.
 map("n", "/", action("actions.find"), { desc = "Find in File" })
-map("n", "*", action("editor.action.nextSelectionMatchFindAction"), { desc = "Find Next Word" })
-map("n", "n", action("editor.action.nextMatchFindAction"), { desc = "Next Match" })
-map("n", "N", action("editor.action.previousMatchFindAction"), { desc = "Prev Match" })
+map("n", "*", find_match("editor.action.nextSelectionMatchFindAction"), { desc = "Find Next Word" })
+map(nx, "n", find_match("editor.action.nextMatchFindAction"), { desc = "Next Match" })
+map(nx, "N", find_match("editor.action.previousMatchFindAction"), { desc = "Prev Match" })
 for _, lhs in ipairs({ "<leader>/", "<leader>sg", "<leader>sG" }) do
   map("n", lhs, action("workbench.action.findInFiles"), { desc = "Grep" })
 end
