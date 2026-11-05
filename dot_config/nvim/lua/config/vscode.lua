@@ -232,6 +232,7 @@ map("n", "<leader>gL", action("workbench.scm.history.focus"), { desc = "Git Log 
 map("n", "<leader>gf", action("timeline.focus"), { desc = "Git Current File History (Timeline)" })
 map("n", "<leader>gb", action("git.blame.toggleEditorDecoration"), { desc = "Git Blame Line" })
 map("n", "<leader>gd", action("git.openChange"), { desc = "Git Diff" })
+map("n", "<leader>go", action("git.openFile"), { desc = "Git Open File" })
 map("n", "]h", action("workbench.action.editor.nextChange"), { desc = "Next Hunk" })
 map("n", "[h", action("workbench.action.editor.previousChange"), { desc = "Prev Hunk" })
 map(nx, "<leader>ghs", action("git.stageSelectedRanges"), { desc = "Stage Hunk" })
