@@ -14,7 +14,7 @@ Claude Code (`~/.claude`) and Codex CLI (`~/.codex`) settings share one optional
 
 `.chezmoidata/packages.toml` lists tools to download and install automatically:
 Windows uses WinGet package IDs; macOS uses Homebrew formula names. Both lists
-initially contain `ffmpeg`. Install WinGet (App Installer) or Homebrew first if
+contain `ffmpeg` and `d2`. Install WinGet (App Installer) or Homebrew first if
 the machine needs packages.
 
 Following [chezmoi's package installation pattern](https://www.chezmoi.io/user-guide/advanced/install-packages-declaratively/),
@@ -38,6 +38,23 @@ Then run `chezmoi apply`. On a new machine, `chezmoi init --apply xbghc` also
 installs these packages. Windows installs run silently and accept package/source
 agreements; an installer may still require administrator approval. Open a new
 terminal after installing tools so it picks up any `PATH` changes.
+
+## Neovim D2
+
+Opening a `.d2` file loads [d2-vim](https://github.com/d2lang/d2-vim) for syntax
+highlighting, indentation, validation, and ASCII previews. `chezmoi apply`
+installs the D2 CLI on Windows and macOS; on Linux, install it separately.
+ASCII previews require D2 0.7.1 or newer. Restart the terminal after installing
+the CLI so Neovim picks up its `PATH`.
+
+- `<leader>d2`: preview the diagram in a vertical split; saving updates an open preview.
+- `:D2PreviewToggle`: open or close the preview.
+- `<leader>cf`: format with D2 through Conform. Format on save stays off by default;
+  `<leader>uf` controls it through LazyVim.
+- `:D2Validate`: check the diagram and show errors in quickfix.
+
+These integrations target terminal Neovim; the existing VSCode plugin filter
+continues to apply.
 
 ## VSCode
 The nvim config doubles as the config for the [vscode-neovim](https://github.com/vscode-neovim/vscode-neovim) extension: under VSCode only the editing plugins load, and the LazyVim keys are mapped to VSCode commands (`lua/config/vscode.lua`, `lua/plugins/vscode.lua`). After changing it, run `Neovim: Restart Extension`.

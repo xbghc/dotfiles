@@ -3,7 +3,9 @@
 [packages]
     windows = [
         { id = "Gyan.FFmpeg", command = "ffmpeg" },
+        { id = "Terrastruct.D2", command = "d2" },
     ]
     darwin = [
         { id = "ffmpeg", command = "ffmpeg" },
+        { id = "d2", command = "d2" },
     ]
